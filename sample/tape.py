@@ -4,7 +4,7 @@ from complex import ComplexNum
 from array import array
 
 class Tape(object):
-    def __init__(self, path : str):
+    def __init__(self, path : str) -> None:
         self.path = path
         self.buffer_size = 40
         self.disk_w = 0
@@ -17,7 +17,7 @@ class Tape(object):
             self.size = os.path.getsize(self.path)
         self.len = int(self.size / 8)
     
-    def clc(self, delete=True):
+    def clc(self, delete=True) -> None:
         if os.path.isfile(self.path):
             if delete:
                 os.remove(self.path)
@@ -27,12 +27,12 @@ class Tape(object):
         self._toread = []
         self._towrite = []
     
-    def is_empty(self):
+    def is_empty(self) -> None:
         if os.path.isfile(self.path):
             self.size = os.path.getsize(self.path)
         return self._ptr == self.size
     
-    def print_tape(self):
+    def print_tape(self) -> None:
         if not os.path.isfile(self.path):
             print(self.path, ': (empty)')
             return
@@ -49,7 +49,7 @@ class Tape(object):
                 i += 1
         file.close()
     
-    def can_read(self):
+    def can_read(self) -> bool:
         return not (len(self._toread) == 0 and self.is_empty())
 
     def readt(self) -> ComplexNum:
@@ -57,7 +57,7 @@ class Tape(object):
             self._read()
         return self._toread.pop(0)
     
-    def _read(self):
+    def _read(self) -> None:
         self.disk_r += 1
         if self.is_empty():
             print("End of tape! Error")
@@ -77,16 +77,16 @@ class Tape(object):
         file.close()
         self._toread = nums
     
-    def close(self):
+    def close(self) -> None:
         self._write()
     
-    def write(self, num : ComplexNum):
+    def write(self, num : ComplexNum) -> None:
         self._towrite.append(num)
         if len(self._towrite) * 8 == self.buffer_size:
             self._write()
             self._towrite = []
 
-    def _write(self):
+    def _write(self) -> None:
         self.disk_w += 1
         data = []
         for num in self._towrite:
