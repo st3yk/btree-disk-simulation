@@ -4,7 +4,7 @@ from complex import ComplexNum
 from array import array
 
 class Tape(object):
-    def __init__(self, path):
+    def __init__(self, path : str):
         self.path = path
         self.buffer_size = 40
         self.disk_w = 0
@@ -80,7 +80,7 @@ class Tape(object):
     def close(self):
         self._write()
     
-    def write(self, num):
+    def write(self, num : ComplexNum):
         self._towrite.append(num)
         if len(self._towrite) * 8 == self.buffer_size:
             self._write()
