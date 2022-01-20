@@ -3,5 +3,6 @@ from node import Node
 
 
 if __name__ == '__main__':
-    root = Node()
-    T = BTree()
+    r = Node(2)
+    print(len(r.children))
+    print(len(r.keys))
