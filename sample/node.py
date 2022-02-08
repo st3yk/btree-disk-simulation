@@ -30,6 +30,15 @@ class Node(object):
             self.keys[i] = data.pop(0)
             self.adds[i] = data.pop(0)
             self.children[i+1] = data.pop(0)
+    
+    def get_keys_to_print(self) -> list:
+        to_print = []
+        for key in self.keys:
+            if key < self.max_key:
+                to_print.append(key)
+            else:
+                to_print.append("empty")
+        return to_print
 
     def save(self) -> None:
         data = []

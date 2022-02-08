@@ -11,6 +11,15 @@ class BTree(object):
         self.h = h
         super().__init__()
     
+    def print(self, node_index = 0, depth = 0) -> None:
+        self.node.load(node_index)
+        for children_node_index in self.node.children:
+            if children_node_index != -1:
+                self.print(children_node_index, depth + 1)
+        self.node.load(node_index)
+        print("  " * depth, self.node.get_keys_to_print())
+
+    
     def search(self, key: int) -> tuple:
         self.node.load(self.root)
         while True:
@@ -40,9 +49,6 @@ class BTree(object):
                     break
             self.node.keys[index] = key
             self.node.adds[index] = address
-
-
-
             return True
         elif self.node.can_compensate():
         #Try compensation
@@ -52,8 +58,6 @@ class BTree(object):
                 return True
             else:
                 return False
-
-        
 
     def update(self, key: int) -> None:
         pass
