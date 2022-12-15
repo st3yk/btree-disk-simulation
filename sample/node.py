@@ -1,5 +1,5 @@
-from complex import ComplexNum
 from diskmanager import DiskManager
+from prob import Prob
 
 class Node(object):
     def __init__(self, d : int, leaf=0) -> None:

@@ -1,7 +1,6 @@
 from operator import index
-from tkinter import W
 from node import Node
-from complex import ComplexNum
+from prob import Prob
 
 class BTree(object):
     def __init__(self, d : int, h : int) -> None:
@@ -27,7 +26,7 @@ class BTree(object):
             if key_index != -1:
                 return True, self.node.dm.get_value(key_index)
             if key_index == -1 and self.node.leaf == 1:
-                return False, ComplexNum(-1,-1)
+                return False, Prob(-1,-1, -1)
             if key_index == -1 and self.node.leaf != 0:
                 if node_index  != -1:
                     self.node.load(node_index)

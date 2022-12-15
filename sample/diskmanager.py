@@ -1,5 +1,5 @@
 from array import array
-from complex import ComplexNum
+from prob import Prob
 import struct
 
 class DiskManager(object):
@@ -10,6 +10,7 @@ class DiskManager(object):
         self.v_write = 0
         self.pages_path = 'pages.data'
         self.values_path = 'values.data'
+        # m - current number of keys, pointer to parent, am I leaf?, children, keys, addresses - each of these 4 bytes
         self.page_size = 4 * (1 + 1 + 1 + (2 * d + 1) + (2 * d) + (2 * d))
         super().__init__()
     
@@ -29,12 +30,13 @@ class DiskManager(object):
             byte_data.tofile(pages)
         pages.close()
     
-    def get_value(self, address : int) -> ComplexNum:
+    def get_value(self, address : int) -> Prob:
         self.v_read += 1
         with open(self.values_path, 'rb') as values:
-            values.seek(address * 8)
-            real = values.read(4)
-            imag = values.read(4)
+            values.seek(address * 12)
+            p1 = values.read(4)
+            p2 = values.read(4)
+            psum = values.read(4)
         values.close()
-        return ComplexNum(struct.unpack('f', real)[0], struct.unpack('f', imag)[0])
+        return Prob(struct.unpack('f', p1)[0], struct.unpack('f', p2)[0], struct.unpack('f', psum)[0])
 
