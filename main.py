@@ -1,15 +1,21 @@
 from btree import BTree
 from node import Node
+from prob import Prob
 import get_data
 
 def test():
     tree = BTree(2, 2)
     data = get_data.from_file()
-    for address in range(data):
-        # For now I only operate on key - data[i][0] and address
-        # FIXME implement adding Prob objects to values.bin
+    print(data)
+    for i in range(len(data)):
+        # testing file has 4 numbers
+        # first one is the key used in the tree
+        # second, third and fourth are attributes of Prob object
         print(data[i][0])
-        tree.insert(data[i][0], address)
+        address = i
+        prob = Prob(data[i][1], data[i][2], data[i][3])
+        tree.insert(data[i][0], address, prob)
+        tree.print()
 
 if __name__ == '__main__':
     test()

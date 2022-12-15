@@ -1,9 +1,8 @@
 class Prob(object):
-    def __init__(self, p1, p2, psum, key) -> None:
+    def __init__(self, p1, p2, psum) -> None:
         self.p1 = p1
         self.p2 = p2
         self.psum = psum
-        self.key = key
         self.pprod = self.p1 + self.p2 - self.psum
     
     def __str__(self) -> str:

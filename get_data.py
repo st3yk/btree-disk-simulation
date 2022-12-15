@@ -35,9 +35,6 @@ def from_file(src="test.txt"):
         lines = source.readlines()
         for line in lines:
             key, p1, p2, psum = line.split(' ')
-            data.append(int(key))
-            data.append(float(p1))
-            data.append(float(p2))
-            data.append(float(psum))
+            data.append([int(key), float(p1), float(p2), float(psum)])
     source.close()
     return data
