@@ -41,10 +41,11 @@ class DiskManager(object):
         return Prob(struct.unpack('f', p1)[0], struct.unpack('f', p2)[0], struct.unpack('f', psum)[0])
     
     def save_value(self, address, prob : Prob) -> None:
-        self.v_write += 1
-        with open(self.values_path, 'ab') as values:
-            values.seek(address * 12)
-            to_write = array('f', [prob.p1, prob.p2, prob.psum])
-            to_write.tofile(values)
-        values.close()
+        if self.get_value(address) != prob:
+            self.v_write += 1
+            with open(self.values_path, 'ab') as values:
+                values.seek(address * 12)
+                to_write = array('f', [prob.p1, prob.p2, prob.psum])
+                to_write.tofile(values)
+            values.close()
 

@@ -2,7 +2,7 @@ from diskmanager import DiskManager
 from prob import Prob
 
 class Node(object):
-    def __init__(self, d : int, leaf=0) -> None:
+    def __init__(self, d : int, parent=-1) -> None:
         self.max_key = 2147483646
         # This is to be used for any node
         self.index = 0
@@ -12,8 +12,9 @@ class Node(object):
         # Save this in page
         # m = current number of keys on the page
         self.m = 0
-        self.parent = 100
-        self.leaf = leaf 
+        # Every newly created Node is a leaf
+        self.leaf = 1
+        self.parent = parent
         self.children = (2*d + 1) * [-1]
         self.keys = (2*d) * [self.max_key]
         self.adds = (2*d) * [-1]
