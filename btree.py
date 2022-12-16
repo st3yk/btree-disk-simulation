@@ -29,7 +29,6 @@ class BTree(object):
             if key_index != -1:
                 return True, self.node.dm.get_value(key_index)
             if key_index == -1 and self.node.leaf == 1:
-                print('here!!!')
                 return False, Prob(-1, -1, -1)
             if key_index == -1 and self.node.leaf != 0:
                 if node_index  != -1:
@@ -43,7 +42,6 @@ class BTree(object):
         if(self.search(key)[0]):
             return False
         # Since we called search function, our current node is a leaf
-        print('here2!')
         if self.node.m < 2 * self.d:
         # Insert (x, a) on the current page
             index = -1

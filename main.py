@@ -14,8 +14,10 @@ def test():
         print(data[i][0])
         address = i
         prob = Prob(data[i][1], data[i][2], data[i][3])
+        print("Inserting to a btree -> key {}, Prob: {}".format(i, prob))
         tree.insert(data[i][0], address, prob)
         tree.print()
+    print("search for key 2 = {}".format(tree.search(2)[1]))
 
 if __name__ == '__main__':
     test()

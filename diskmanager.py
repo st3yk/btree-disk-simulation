@@ -42,11 +42,9 @@ class DiskManager(object):
     
     def save_value(self, address, prob : Prob) -> None:
         self.v_write += 1
-        with open(self.values_path, 'rb') as values:
+        with open(self.values_path, 'ab') as values:
             values.seek(address * 12)
             to_write = array('f', [prob.p1, prob.p2, prob.psum])
-            p1 = values.read(4)
-            p2 = values.read(4)
-            psum = values.read(4)
+            to_write.tofile(values)
         values.close()
 
