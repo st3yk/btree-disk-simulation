@@ -2,7 +2,7 @@ from btree import BTree
 from node import Node
 from prob import Prob
 import get_data
-
+#lubie w d**e
 def test():
     tree = BTree(2, 2)
     data = get_data.from_file()

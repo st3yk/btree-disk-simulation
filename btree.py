@@ -4,6 +4,7 @@ from prob import Prob
 
 class BTree(object):
     def __init__(self, d : int, h : int) -> None:
+        self.current_number_of_keys = 0
         self.root = 0
         self.number_of_nodes = 0
         self.node = Node(d, self.number_of_nodes)
@@ -42,8 +43,9 @@ class BTree(object):
 
     def insert(self, key : int, address : int, prob : Prob) -> bool:
         # Already exists
-        if(self.search(key)[0]):
+        if self.search(key)[0] or self.current_number_of_keys == (2 * self.d + 1)**self.h - 1:
             return False
+        self.node.dm.save_value(address, prob)
         # Since we called search function, our current node is a leaf
         if self.node.m < 2 * self.d:
         # Insert (x, a) on the current page
@@ -73,6 +75,41 @@ class BTree(object):
                 return True
             else:
                 return False
+
+    def full_insert(self, key : int, address : int) -> bool:
+        new_node = Node(self.d, self.node.leaf)
+            
+        keys = [x for x in self.node.keys]
+        addresses = [x for x in self.node.adds]
+        children = [x for x  in self.node.children]
+
+        index = 0
+        if not key < keys[0]:
+            for i in range(len(keys)):
+                index += 1
+                if key < keys[i]:
+                    index = i
+                    break
+
+        
+        left_keys = keys[:index]
+        right_keys = keys[index:]
+        left_addresses = addresses[:index]
+        right_addresses = addresses[index:]
+
+        all_keys = left_keys + [key] + right_keys
+        all_addresses = left_addresses + [address] + right_addresses
+
+        new_node.keys = all_keys[len(all_keys)//2:]
+        new_node.adds = all_addresses[len(all_addresses)//2:]
+        new_node.children = self.children[len(self.children)//2:]
+        self.keys = all_keys[:len(all_keys)//2]
+        self.adds = all_addresses[:len(all_addresses)//2]
+        self.children = self.children[:len(self.children)//2]
+
+        parent = Node(self.d)
+        
+           
 
     def update(self, key: int) -> None:
         pass
