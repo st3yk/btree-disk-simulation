@@ -72,7 +72,71 @@ class BTree(object):
         # #Try compensation
         #     return True
         else:
-            self._split_insert(key, address)
+            self._split_insert(key, address, new_child)
+
+    def _compensate_insert(self, key : int, address : int, new_child : int = -1) -> bool:
+        current = self.node_index
+        # You have to find your index in parent's children list
+        # keys[your-1] -> left sibling
+        # keys[your+1] -> right sibling
+        # If there is no parent we cannot compensate
+        if self.parent != -1:
+            self.node.load(self.parent)
+            index_in_parent = self.node.children.index(current)
+            left_sibling = -1
+            right_sibling = -1
+            if index_in_parent != 0:
+                left_sibling = index_in_parent - 1
+                parent_left_key = self.node.keys[index_in_parent-1]
+                parent_left_add = self.node.adds[index_in_parent-1]
+            if index_in_parent != self.d * 2:
+                right_sibling = index_in_parent + 1
+                parent_right_key = self.node.keys[index_in_parent]
+                parent_right_add = self.node.adds[index_in_parent]
+            # Try left sibling first
+            if left_sibling != -1
+                self.node.load(self.node.children[left_sibling])
+                if self.node.m < self.d * 2:
+                    # Add parent key as the last element in the sibling
+                    self.node.keys[self.node.m] = parent_left_key
+                    self.node.keys[self.node.m] = parent_left_add
+                    self.node.m += 1
+                    self.node.save()
+                    # Insert (x, a) on the current page
+                    self.node.load(current)
+                    if key < self.node.keys[0]:
+                    # add key to parent, no need for modyfing self.node.keys
+                        self.node.load(self.parent)
+                        self.node.keys[index_in_parent] = key
+                        self.node.adds[index_in_parent] = address
+                    else:
+                        to_parent_key = self.node.keys[0]
+                        to_parent_add = self.node.adds[0]
+                        self.node.keys = self.node.keys[1:] + [self.node.max_key]
+                    # insert key on the current page
+                    index = 0
+                    if not key < self.node.keys[0]:
+                        for i in range(len(self.node.keys)):
+                            index += 1
+                            if key < self.node.keys[i] or self.node.keys[i] == self.node.max_key:
+                                index = i
+                                break
+                    # move all of the keys and addresses to the right
+                    for j in range(len(self.node.keys)-1, index, -1):
+                        self.node.keys[j] = self.node.keys[j-1]
+                        self.node.adds[j] = self.node.adds[j-1]
+                    self.node.keys[index] = key
+                    self.node.adds[index] = address
+            self.node.m += 1
+            self.node.save()
+                    self.node.load(current)
+                    self.node.keys
+
+                return True
+            if right_sibling != -1:
+                #Try right sibling
+                return True
+        return False
 
     def _split_insert(self, key : int, address : int, new_child: int = -1) -> bool:
         print('dupa1')
@@ -98,6 +162,9 @@ class BTree(object):
 
         all_keys = left_keys + [key] + right_keys
         all_addresses = left_addresses + [address] + right_addresses
+        if new_child != -1:
+            tmp_children = children[:index+1] + [new_child] + children[index+1:]
+            children = tmp_children
 
         self.node.children = (2*self.d + 1) * [-1]
         self.node.keys = (2*self.d) * [self.node.max_key]
