@@ -4,11 +4,12 @@ from prob import Prob
 class Node(object):
     def __init__(self, d : int, index: int, leaf=1, parent=-1) -> None:
         self.max_key = 2147483646
+        # If you want to print info, otherwise set to False
+        self.verbose = True
         # This is to be used for any node
         self.index = index
         self.d = d
         self.dm = DiskManager(d)
-
         # Save this in page
         # m = current number of keys on the page
         self.m = 0
@@ -51,7 +52,7 @@ class Node(object):
             data.append(self.keys[i])
             data.append(self.adds[i])
             data.append(self.children[i+1])
-        print('saving node: {} {}'.format(self.index, self.parent))
+        print('saving node: {}, parent: {}'.format(self.index, self.parent))
         print(data)
         self.dm.save_page(self.index, data)
     
@@ -66,17 +67,20 @@ class Node(object):
             elif self.keys[key_index] > key:
                 high = key_index - 1
             else:
-                print("Found key {} at index {}, address = #address#".format(key, key_index))
+                if self.verbose:
+                    print("Found key {} at index {}, address = {}".format(key, key_index, self.adds[key_index]))
                 return key_index, -1
         if key < self.keys[key_index]:
-            print("Not found {}, finished at [{}]: {}, LEFT".format(key, key_index, self.keys[key_index]))
+            if self.verbose:
+                print("Not found {}, finished at [{}]: {}, LEFT".format(key, key_index, self.keys[key_index]))
             return -1, self.children[key_index]
         else:
-            print("Not found {}, finished at [{}]: {}, RIGHT".format(key, key_index, self.keys[key_index]))
+            if self.verbose:
+                print("Not found {}, finished at [{}]: {}, RIGHT".format(key, key_index, self.keys[key_index]))
             return -1, self.children[key_index + 1]
 
     def print(self, depth=0) -> None:
-        print("  " * depth, self.get_keys_to_print(), " ", self.parent)
+        print("  " * depth, "{}, parent: {}".format(self.get_keys_to_print(), self.parent))
         for child_node_index in self.children:
             if child_node_index != -1:
                 child_node = Node(self.d, child_node_index)

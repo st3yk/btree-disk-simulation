@@ -25,12 +25,19 @@ class DiskManager(object):
     def save_page(self, index : int, data : list) -> None:
         self.p_write += 1
         with open(self.pages_path, 'rb+') as pages:
-            #file_data = pages.read()
             pages.seek(index * self.page_size)
             byte_data = array('i', data)
             byte_data.tofile(pages)
-            #pages.truncate()
         pages.close()
+    
+    def update_value(self, address : int, prob : Prob) -> None:
+        self.v_write += 1
+        with open(self.values_path, 'rb+') as values:
+            values.seek(address * 12)
+            to_write = array('f', [prob.p1, prob.p2, prob.psum])
+            to_write.tofile(values)
+        values.close()
+
     
     def get_value(self, address : int) -> Prob:
         self.v_read += 1

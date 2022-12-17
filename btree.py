@@ -22,12 +22,15 @@ class BTree(object):
         self.node.load(self.root)
         self.node.print()
     
-    def search(self, key: int) -> tuple:
+    def search(self, key: int, get_address : bool = False) -> tuple:
         self.node.load(self.root)
         while True:
             key_index, node_index = self.node.find(key)
             if key_index != -1:
-                return True, self.node.dm.get_value(key_index)
+                if get_address:
+                    return True, self.node.dm.get_value(key_index), self.node.adds[key_index]
+                else:
+                    return True, self.node.dm.get_value(key_index)
             if key_index == -1 and self.node.leaf == 1:
                 return False, Prob(-1, -1, -1)
             if key_index == -1 and self.node.leaf != 0:
@@ -37,6 +40,7 @@ class BTree(object):
     def insert(self, key : int, address : int, prob : Prob) -> bool:
         # Already exists
         if self.search(key)[0] or self.current_number_of_keys == (2 * self.d + 1)**self.h - 1:
+            print('Key {} already exists in the tree or current number of keys = max keys'.format(key))
             return False
         self.node.dm.save_value(address, prob)
         return self._insert(key, address)
@@ -44,7 +48,6 @@ class BTree(object):
     def _insert(self, key : int, address : int, new_child: int = -1) -> bool:
         # Since we called search function, our current node is a leaf
         if self.node.m < 2 * self.d:
-            print('current number of keys: {}, '.format(self.node.m))
         # Insert (x, a) on the current page
             index = 0
             if not key < self.node.keys[0]:
@@ -82,7 +85,7 @@ class BTree(object):
         # If there is no parent we cannot compensate
         if self.node.parent != -1:
             self.node.load(self.node.parent)
-            print('KOMPENSACJA, KLUCZE PARENTA: {}'.format(self.node.keys))
+            print('PERFORMING COMPENSATION, PARENT\'S KEYS: {}'.format(self.node.keys))
             try:
                 index_in_parent = self.node.children.index(current)
             except:
@@ -91,24 +94,21 @@ class BTree(object):
             right_sibling = -1
             if index_in_parent > 0:
                 left_sibling = self.node.children[index_in_parent - 1]
-                print('left sibling: {}'.format(left_sibling))
+                print('LEFT SIBLING: {}'.format(left_sibling))
                 parent_left_key = self.node.keys[index_in_parent-1]
                 parent_left_add = self.node.adds[index_in_parent-1]
             if index_in_parent != self.d * 2:
                 right_sibling = self.node.children[index_in_parent + 1]
-                print('right sibling: {}'.format(right_sibling))
+                print('RIGHT SIBLING: {}'.format(right_sibling))
                 parent_right_key = self.node.keys[index_in_parent]
                 parent_right_add = self.node.adds[index_in_parent]
             # Try left sibling first
             if left_sibling != -1:
                 self.node.load(left_sibling)
-                print('parent_left_key: {}, current_node: {}'.format(parent_left_key, self.node.keys))
                 if self.node.m < self.d * 2:
                     # Add parent key as the last element in the sibling
-                    print('before parent_left_key: {}, current_node: {}'.format(parent_left_key, self.node.keys))
                     self.node.keys[self.node.m] = parent_left_key
                     self.node.adds[self.node.m] = parent_left_add
-                    print('after parent_left_key: {}, current_node: {}'.format(parent_left_key, self.node.keys))
                     self.node.m += 1
                     self.node.save()
                     # Insert (x, a) on the current page
@@ -119,7 +119,8 @@ class BTree(object):
                         self.node.keys[index_in_parent-1] = key
                         self.node.adds[index_in_parent-1] = address
                         self.node.save()
-                        print('DONE COMPENSATION')
+                        if self.node.verbose:
+                            print('DONE COMPENSATION')
                         return True
                     else:
                         to_parent_key = self.node.keys[0]
@@ -146,7 +147,8 @@ class BTree(object):
                         self.node.keys[index_in_parent-1] = to_parent_key
                         self.node.adds[index_in_parent-1] = to_parent_add
                         self.node.save()
-                        print('DONE COMPENSATION')
+                        if self.node.verbose:
+                            print('DONE COMPENSATION')
                         return True
             if right_sibling != -1:
                 self.node.load(right_sibling)
@@ -164,7 +166,8 @@ class BTree(object):
                         self.node.keys[index_in_parent] = key
                         self.node.adds[index_in_parent] = address
                         self.node.save()
-                        print('DONE COMPENSATION')
+                        if self.node.verbose:
+                            print('DONE COMPENSATION')
                         return True
                     else:
                         to_parent_key = self.node.keys[self.node.m-1]
@@ -176,7 +179,6 @@ class BTree(object):
                         if not key < self.node.keys[0]:
                             for i in range(len(self.node.keys)):
                                 index += 1
-                                print('Key: {}, i: {}, keys[i]: {}'.format(key, i, self.node.keys[i]))
                                 if key < self.node.keys[i] or self.node.keys[i] == self.node.max_key:
                                     index = i
                                     break
@@ -192,13 +194,15 @@ class BTree(object):
                         self.node.keys[index_in_parent] = to_parent_key
                         self.node.adds[index_in_parent] = to_parent_add
                         self.node.save()
-                        print('DONE COMPENSATION')
+                        if self.node.verbose:
+                            print('DONE COMPENSATION')
                         return True
         self.node.load(current)
         return False
 
     def _split_insert(self, key : int, address : int, new_child: int = -1) -> bool:
-        print('split')
+        if self.node.verbose:
+            print('PERFORMING SPLIT')
         new_node = Node(self.d, self.number_of_nodes, self.node.leaf, self.node.parent)
         self.number_of_nodes += 1
             
@@ -248,13 +252,13 @@ class BTree(object):
         new_node.keys = (2*self.d) * [self.node.max_key]
         new_node.adds = (2*self.d) * [-1]
 
-        print('WSZYSTKIE KLUCZE PODCZAS SPLITU {}'.format(all_keys))
-        print('dupa')
+        if self.node.verbose:
+            print('ALL OF THE KEYS TO SPLIT {}'.format(all_keys))
         for (i, k) in enumerate(all_keys[len(all_keys)//2 + 1:]):
             new_node.keys[i] = k
-
-        print('KLUCZE CO ZAPIERDALAJĄ W LEWO {}'.format(self.node.keys))
-        print('KLUCZE CO ZAPIERDALAJĄ W PRAWO {}'.format(new_node.keys))
+        if self.node.verbose:
+            print('KEYS THAT WILL GO TO THE LEFT {}'.format(self.node.get_keys_to_print()))
+            print('KEYS THAT WILL GO TO THE RIGHT {}'.format(new_node.get_keys_to_print()))
         
         for (i, add) in enumerate(all_addresses[len(all_addresses)//2 + 1:]):
             new_node.adds[i] = add
@@ -295,10 +299,18 @@ class BTree(object):
             new_root.save()
             return True
 
-           
+    def update(self, key: int, new : Prob) -> bool:
+        wasFound = self.search(key, True)
+        if wasFound[0]:
+            address = wasFound[2]
+            if self.node.verbose:
+                print('Key {} was found at the address {}, value: {}'.format(key, address, str(wasFound[1])))
+                print('Updating address {} with value: {}'.format(address, str(new)))
+            self.node.dm.update_value(address, new)
+            return True
+        else:
+            if self.node.verbose:
+                print('Key {} was not found in the tree.'.format(key))
+            return False
+            
 
-    def update(self, key: int) -> None:
-        pass
-
-    def delete(self, key : int) -> None:
-        pass
