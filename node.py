@@ -2,10 +2,10 @@ from diskmanager import DiskManager
 from prob import Prob
 
 class Node(object):
-    def __init__(self, d : int, parent=-1) -> None:
+    def __init__(self, d : int, index: int, parent=-1) -> None:
         self.max_key = 2147483646
         # This is to be used for any node
-        self.index = 0
+        self.index = index
         self.d = d
         self.dm = DiskManager(d)
 
