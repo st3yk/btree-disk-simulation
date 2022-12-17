@@ -2,7 +2,7 @@ from diskmanager import DiskManager
 from prob import Prob
 
 class Node(object):
-    def __init__(self, d : int, index: int, parent=-1) -> None:
+    def __init__(self, d : int, index: int, leaf=1, parent=-1) -> None:
         self.max_key = 2147483646
         # This is to be used for any node
         self.index = index
@@ -13,7 +13,7 @@ class Node(object):
         # m = current number of keys on the page
         self.m = 0
         # Every newly created Node is a leaf
-        self.leaf = 1
+        self.leaf = leaf
         self.parent = parent
         self.children = (2*d + 1) * [-1]
         self.keys = (2*d) * [self.max_key]
@@ -51,6 +51,8 @@ class Node(object):
             data.append(self.keys[i])
             data.append(self.adds[i])
             data.append(self.children[i+1])
+        print('saving node: {}'.format(self.index))
+        print(data)
         self.dm.save_page(self.index, data)
     
     def find(self, key : int) -> int:
@@ -72,4 +74,12 @@ class Node(object):
         else:
             print("Not found {}, finished at [{}]: {}, RIGHT".format(key, key_index, self.keys[key_index]))
             return -1, self.children[key_index + 1]
+
+    def print(self, depth=0) -> None:
+        print("  " * depth, self.get_keys_to_print())
+        for child_node_index in self.children:
+            if child_node_index != -1:
+                child_node = Node(self.d, child_node_index)
+                child_node.load(child_node_index)
+                child_node.print(depth + 1)
     

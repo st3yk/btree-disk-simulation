@@ -24,10 +24,13 @@ class DiskManager(object):
 
     def save_page(self, index : int, data : list) -> None:
         self.p_write += 1
-        with open(self.pages_path, 'wb') as pages:
+        with open(self.pages_path, 'rb+') as pages:
+            #file_data = pages.read()
+            print('O ILE ROBIMY SEEKA: {}'.format(index * self.page_size))
             pages.seek(index * self.page_size)
             byte_data = array('i', data)
             byte_data.tofile(pages)
+            #pages.truncate()
         pages.close()
     
     def get_value(self, address : int) -> Prob:
@@ -38,7 +41,11 @@ class DiskManager(object):
             p2 = values.read(4)
             psum = values.read(4)
         values.close()
-        return Prob(struct.unpack('f', p1)[0], struct.unpack('f', p2)[0], struct.unpack('f', psum)[0])
+        try:
+            result = Prob(struct.unpack('f', p1)[0], struct.unpack('f', p2)[0], struct.unpack('f', psum)[0])
+        except:
+            result = (Prob(-1, -1, -1))
+        return result 
     
     def save_value(self, address, prob : Prob) -> None:
         if self.get_value(address) != prob:

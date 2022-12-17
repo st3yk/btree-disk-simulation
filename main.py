@@ -11,6 +11,7 @@ def test():
         # testing file has 4 numbers
         # first one is the key used in the tree
         # second, third and fourth are attributes of Prob object
+        input()
         print(data[i][0])
         address = i
         prob = Prob(data[i][1], data[i][2], data[i][3])
