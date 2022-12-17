@@ -51,7 +51,7 @@ class Node(object):
             data.append(self.keys[i])
             data.append(self.adds[i])
             data.append(self.children[i+1])
-        print('saving node: {}'.format(self.index))
+        print('saving node: {} {}'.format(self.index, self.parent))
         print(data)
         self.dm.save_page(self.index, data)
     
@@ -76,7 +76,7 @@ class Node(object):
             return -1, self.children[key_index + 1]
 
     def print(self, depth=0) -> None:
-        print("  " * depth, self.get_keys_to_print())
+        print("  " * depth, self.get_keys_to_print(), " ", self.parent)
         for child_node_index in self.children:
             if child_node_index != -1:
                 child_node = Node(self.d, child_node_index)

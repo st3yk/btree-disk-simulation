@@ -26,7 +26,6 @@ class DiskManager(object):
         self.p_write += 1
         with open(self.pages_path, 'rb+') as pages:
             #file_data = pages.read()
-            print('O ILE ROBIMY SEEKA: {}'.format(index * self.page_size))
             pages.seek(index * self.page_size)
             byte_data = array('i', data)
             byte_data.tofile(pages)
