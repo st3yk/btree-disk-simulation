@@ -28,9 +28,9 @@ class BTree(object):
             key_index, node_index = self.node.find(key)
             if key_index != -1:
                 if get_address:
-                    return True, self.node.dm.get_value(key_index), self.node.adds[key_index]
+                    return True, self.node.dm.get_value(self.node.adds[key_index]), self.node.adds[key_index]
                 else:
-                    return True, self.node.dm.get_value(key_index)
+                    return True, self.node.dm.get_value(self.node.adds[key_index])
             if key_index == -1 and self.node.leaf == 1:
                 return False, Prob(-1, -1, -1)
             if key_index == -1 and self.node.leaf != 0:

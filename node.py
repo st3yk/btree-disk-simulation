@@ -52,8 +52,8 @@ class Node(object):
             data.append(self.keys[i])
             data.append(self.adds[i])
             data.append(self.children[i+1])
-        print('saving node: {}, parent: {}'.format(self.index, self.parent))
-        print(data)
+        #print('saving node: {}, parent: {}'.format(self.index, self.parent))
+        #print(data)
         self.dm.save_page(self.index, data)
     
     def find(self, key : int) -> int:
@@ -71,16 +71,16 @@ class Node(object):
                     print("Found key {} at index {}, address = {}".format(key, key_index, self.adds[key_index]))
                 return key_index, -1
         if key < self.keys[key_index]:
-            if self.verbose:
-                print("Not found {}, finished at [{}]: {}, LEFT".format(key, key_index, self.keys[key_index]))
+            # if self.verbose:
+            #     print("Not found {}, finished at [{}]: {}, LEFT".format(key, key_index, self.keys[key_index]))
             return -1, self.children[key_index]
         else:
-            if self.verbose:
-                print("Not found {}, finished at [{}]: {}, RIGHT".format(key, key_index, self.keys[key_index]))
+            # if self.verbose:
+            #     print("Not found {}, finished at [{}]: {}, RIGHT".format(key, key_index, self.keys[key_index]))
             return -1, self.children[key_index + 1]
 
     def print(self, depth=0) -> None:
-        print("  " * depth, "{}, parent: {}".format(self.get_keys_to_print(), self.parent))
+        print("  " * depth, "{}, index:{}, parent:{}".format(self.get_keys_to_print(), self.index, self.parent))
         for child_node_index in self.children:
             if child_node_index != -1:
                 child_node = Node(self.d, child_node_index)

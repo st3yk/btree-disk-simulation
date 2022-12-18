@@ -34,10 +34,10 @@ class DiskManager(object):
         self.v_write += 1
         with open(self.values_path, 'rb+') as values:
             values.seek(address * 12)
+            print("MODYFING values.data AT ADDRESS {} with {}".format(address, prob))
             to_write = array('f', [prob.p1, prob.p2, prob.psum])
             to_write.tofile(values)
         values.close()
-
     
     def get_value(self, address : int) -> Prob:
         self.v_read += 1
